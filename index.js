@@ -68,6 +68,28 @@ async function run() {
     res.send(result)
 
   })
+
+  app.patch('/update/:id',async(req,res)=>{
+    const id = req.params.id
+    const data =req.body
+    const query = {_id: new ObjectId(id)}
+    const update ={
+      $set:{
+        movietitle: data.movietitle,
+        duration: data.duration,
+        movieposter: data.movieposter,
+        year: data.year,
+        rating: data.rating,
+        summary: data.summary,
+        genre: data.genre,
+      },
+    }
+
+    const result = await movieCollection.updateOne(query,update)
+    res.send(result)
+
+
+  })
     
     app.get('/movies',async(req,res)=>{
         const point = movieCollection.find()
