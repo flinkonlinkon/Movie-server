@@ -10,7 +10,7 @@ app.use(express.json())
 app.use(cors())
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = "mongodb+srv://Movie:rE2WdrNuKW5jrvFv@coffee.2vgrj.mongodb.net/?retryWrites=true&w=majority&appName=coffee";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -31,6 +31,42 @@ async function run() {
    
 
     const movieCollection = client.db('movieDB').collection('movie')
+    const favMovieCollection = client.db('favMovie').collection('fav')
+
+    app.post('/fav',async(req,res)=>{
+
+      const favData = req.body
+      const result = await favMovieCollection.insertOne(favData)
+      res.send(result)
+
+    })
+
+    app.get('/fav',async(req,res)=>{
+      const point = favMovieCollection.find()
+      const result = await point.toArray()
+     
+      console.log(result);
+      
+      res.send(result)
+  })
+
+  app.delete('/fav/:id',async(req,res)=>{
+    const id = req.params.id
+    const query = {_id: (id)}
+    const result = await favMovieCollection.deleteOne(query)
+    console.log(result);
+    
+    res.send(result)
+
+  })
+
+  app.get('/update/:id',async(req,res)=>{
+    const id = req.params.id
+    const query = {_id: new ObjectId(id)}
+    const result = await movieCollection.findOne(query)
+    res.send(result)
+
+  })
     
     app.get('/movies',async(req,res)=>{
         const point = movieCollection.find()
